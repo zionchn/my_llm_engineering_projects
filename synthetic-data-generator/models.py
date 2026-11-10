@@ -54,12 +54,21 @@ def ask_claude(system, user):
     response = claude.messages.create(
         model="claude-haiku-5-5",
         max_tokens=1024,
-        messages = [
+        system=system,
+        messages=[
             {"role": "user", "content": user}
-            ]
+        ]
     )
 
-    return response.content[0].text
+    text_blocks = []
+
+    for block in response.content:
+        text = getattr(block, "text", None)
+
+        if isinstance(text, str):
+            text_blocks.append(text)
+
+    return "\n".join(text_blocks)
 
 
 # Ollama function caller
